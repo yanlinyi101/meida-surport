@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} 问题 - 美大客服支持中心{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="flex items-center">
+    <span class="mx-2 text-gray-400">&gt;</span>
+    <span class="text-gray-600">{{ product.name }}</span>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <div class="flex items-center mb-4">
+        <div class="text-4xl mr-4">{{ product.icon }}</div>
+        <h1 class="text-3xl font-medium text-gray-900">{{ product.name }}</h1>
+    </div>
+    <p class="text-gray-500">请选择您遇到的故障代码，我们将为您提供相应的解决方案</p>
+</div>
+
+<!-- 搜索框 -->
+<div class="max-w-md mx-auto mb-6">
+    <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            </svg>
+        </div>
+        <input 
+            id="issue-search" 
+            type="search" 
+            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+            placeholder="搜索故障代码..." 
+            aria-label="搜索故障代码"
+        >
+    </div>
+</div>
+
+<!-- 故障代码分类 -->
+<div class="mb-6">
+    <h2 class="text-lg font-medium text-gray-900 mb-3">常见故障代码</h2>
+    
+    <!-- 故障代码网格 -->
+    <div id="issues-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+        {% for issue in issues %}
+        {% if issue.code != "other" %}
+        <a 
+            href="/solution/{{ product.slug }}/{{ issue.code }}" 
+            class="issue-card bg-white rounded-md shadow-sm border border-gray-200 p-3 flex flex-col items-center hover:shadow-md transition-shadow focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
+            data-issue-code="{{ issue.code }}"
+            data-issue-title="{{ issue.title }}"
+            tabindex="0"
+        >
+            <div class="text-xl font-bold text-blue-600 mb-1">{{ issue.code }}</div>
+            <p class="text-sm text-gray-700 line-clamp-2">{{ issue.title }}</p>
+        </a>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<!-- 其他问题 -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mt-8">
+    <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-medium text-gray-900">其他问题</h2>
+    </div>
+    <div class="px-6 py-4">
+        {% for issue in issues %}
+        {% if issue.code == "other" %}
+        <a 
+            href="/solution/{{ product.slug }}/{{ issue.code }}" 
+            class="block hover:bg-gray-50 transition-colors focus:outline-none focus:bg-gray-50 focus:ring-2 focus:ring-inset focus:ring-blue-500 rounded-md p-3"
+            tabindex="0"
+            data-issue-code="{{ issue.code }}"
+            data-issue-title="{{ issue.title }}"
+            aria-label="{{ issue.title }}"
+        >
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-base font-medium text-gray-900">{{ issue.title }}</p>
+                </div>
+                <div class="text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
+        </a>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<!-- 联系我们 -->
+<div class="mt-8 text-center">
+    <p class="text-gray-500">无法找到您的问题？</p>
+    <a href="#" class="inline-block mt-2 text-blue-600 hover:text-blue-800 hover:underline">联系我们获取帮助</a>
+</div>
+{% endblock %} 

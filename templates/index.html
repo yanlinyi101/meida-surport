@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}选择产品 - 美大客服支持中心{% endblock %}
+
+{% block breadcrumb %}
+<!-- 首页不显示面包屑 -->
+{% endblock %}
+
+{% block content %}
+<div class="text-center mb-12">
+    <h1 class="text-3xl font-medium text-gray-900 mb-3">请选择产品</h1>
+    <p class="text-gray-500">我们会根据产品为你提供快速指引</p>
+</div>
+
+<!-- 搜索框 -->
+<div class="max-w-md mx-auto mb-10">
+    <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+            </svg>
+        </div>
+        <input 
+            id="product-search" 
+            type="search" 
+            class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+            placeholder="搜索产品..." 
+            aria-label="搜索产品"
+        >
+    </div>
+</div>
+
+<!-- 产品卡片网格 -->
+<div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    {% for product in products %}
+    {% if product.slug == "integrated-stove" %}
+    <a 
+        href="/issues/{{ product.slug }}" 
+        class="product-card bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex flex-col items-center hover:shadow-md transition-shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+        data-name="{{ product.name }}"
+        tabindex="0"
+    >
+        <div class="text-4xl mb-4">{{ product.icon }}</div>
+        <h2 class="text-lg font-medium text-gray-900">{{ product.name }}</h2>
+    </a>
+    {% endif %}
+    {% endfor %}
+</div>
+
+<!-- 无搜索结果提示 -->
+<div id="no-results" class="hidden text-center py-10">
+    <p class="text-gray-500">未找到匹配的产品</p>
+    <button id="reset-search" class="mt-4 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        重置搜索
+    </button>
+</div>
+{% endblock %} 

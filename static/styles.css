@@ -1,0 +1,89 @@
+/**
+ * 美大客服支持中心 - 补充样式
+ * 注意：主要样式通过 Tailwind CSS 实现，这里只包含少量补充样式
+ */
+
+/* 全局样式 */
+:root {
+  --focus-ring-color: rgba(59, 130, 246, 0.5);
+}
+
+/* 焦点样式增强 */
+:focus-visible {
+  outline: 2px solid var(--focus-ring-color);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* 产品卡片样式增强 */
+.product-card {
+  transition: all 0.2s ease-in-out;
+}
+
+.product-card:hover {
+  transform: translateY(-2px);
+}
+
+.product-card:active {
+  transform: translateY(0);
+}
+
+/* 问题列表项样式增强 */
+[data-issue-code] {
+  transition: background-color 0.15s ease-in-out;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* 移动端优化 */
+@media (max-width: 640px) {
+  .product-card {
+    padding: 1rem;
+  }
+  
+  .product-card .text-4xl {
+    font-size: 2.5rem;
+  }
+}
+
+/* 打印样式优化 */
+@media print {
+  body {
+    background-color: white;
+  }
+  
+  header, footer, .no-print {
+    display: none;
+  }
+}
+
+/* 辅助功能增强 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+} 

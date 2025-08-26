@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - {{ issue.title }} 解决方案{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="flex items-center">
+    <span class="mx-2 text-gray-400">&gt;</span>
+    <a href="/issues/{{ product.slug }}" class="text-blue-600 hover:text-blue-800">{{ product.name }}</a>
+</li>
+<li class="flex items-center">
+    <span class="mx-2 text-gray-400">&gt;</span>
+    <span class="text-gray-600">{{ issue.title }}</span>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <div class="flex items-center mb-4">
+        <div class="text-4xl mr-4">{{ product.icon }}</div>
+        <div>
+            <h1 class="text-3xl font-medium text-gray-900">{{ product.name }}</h1>
+            <p class="text-xl text-gray-600">{{ issue.title }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- 故障解决方案 -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-8">
+    <div class="px-6 py-5 border-b border-gray-200">
+        <h2 class="text-xl font-medium text-gray-900">初步解决方案</h2>
+    </div>
+    <div class="px-6 py-5">
+        <div class="prose max-w-none">
+            {% if solution.causes %}
+            <h3 class="text-lg font-medium text-gray-900 mb-3">可能原因</h3>
+            <ul class="list-disc pl-5 space-y-2 mb-6">
+                {% for cause in solution.causes %}
+                <li class="text-gray-700">{{ cause }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            
+            {% if solution.user_check %}
+            <h3 class="text-lg font-medium text-gray-900 mb-3">解决方法</h3>
+            <ul class="list-disc pl-5 space-y-2 mb-6">
+                {% for check in solution.user_check %}
+                <li class="text-gray-700">{{ check }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            
+            {% if solution.solution_advice %}
+            <div class="mt-6 p-4 bg-yellow-50 rounded-md">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-yellow-800">处理建议</p>
+                        <p class="mt-2 text-sm text-yellow-700">{{ solution.solution_advice }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if solution.note %}
+            <div class="mt-6 p-4 bg-blue-50 rounded-md">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-blue-700">{{ solution.note }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<hr class="my-8 border-t border-gray-200">
+
+<!-- 预约表单 -->
+<div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div class="px-6 py-5 border-b border-gray-200">
+        <h2 class="text-xl font-medium text-gray-900">预约上门服务</h2>
+        <p class="mt-1 text-sm text-gray-500">如果问题仍未解决，请预约专业技术人员上门服务</p>
+    </div>
+    <div class="px-6 py-5">
+        <form id="appointment-form" class="space-y-6">
+            <!-- 联系信息 -->
+            <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700">联系电话 <span class="text-red-500">*</span></label>
+                <div class="mt-1">
+                    <input type="tel" name="phone" id="phone" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="请输入您的联系电话" required>
+                </div>
+            </div>
+            
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700">联系人</label>
+                <div class="mt-1">
+                    <input type="text" name="name" id="name" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="请输入您的姓名">
+                </div>
+            </div>
+            
+            <div>
+                <label for="address" class="block text-sm font-medium text-gray-700">地址 <span class="text-red-500">*</span></label>
+                <div class="mt-1">
+                    <input type="text" name="address" id="address" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="请输入详细地址" required>
+                </div>
+            </div>
+            
+            <!-- 日期选择 -->
+            <div>
+                <label for="date" class="block text-sm font-medium text-gray-700">预约日期 <span class="text-red-500">*</span></label>
+                <div class="mt-1">
+                    <input type="date" name="date" id="date" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" min="{{ today }}" required>
+                </div>
+            </div>
+            
+            <!-- 时间段选择 -->
+            <div>
+                <label for="time-slot" class="block text-sm font-medium text-gray-700">预约时间段 <span class="text-red-500">*</span></label>
+                <div class="mt-1">
+                    <select id="time-slot" name="time-slot" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" required>
+                        <option value="">请选择时间段</option>
+                        <option value="morning">上午 (9:00-12:00)</option>
+                        <option value="afternoon">下午 (13:00-17:00)</option>
+                        <option value="evening">晚上 (18:00-20:00)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- 备注 -->
+            <div>
+                <label for="notes" class="block text-sm font-medium text-gray-700">备注信息</label>
+                <div class="mt-1">
+                    <textarea id="notes" name="notes" rows="3" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="其他需要说明的情况"></textarea>
+                </div>
+            </div>
+            
+            <!-- 提交按钮 -->
+            <div>
+                <button type="submit" class="w-full inline-flex justify-center py-3 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    提交预约
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 表单提交成功提示 -->
+<div id="success-message" class="hidden mt-6 rounded-md bg-green-50 p-4">
+    <div class="flex">
+        <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+        </div>
+        <div class="ml-3">
+            <h3 class="text-sm font-medium text-green-800">预约成功</h3>
+            <div class="mt-2 text-sm text-green-700">
+                <p>我们已收到您的预约请求，客服人员将尽快与您联系确认详情。</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
