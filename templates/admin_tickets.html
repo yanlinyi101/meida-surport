@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工单管理 - 美大客服支持系统</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tickets-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .filters-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .filter-group label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .filter-group select,
+        .filter-group input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .tickets-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .table-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-booked { background: #fff3cd; color: #856404; }
+        .status-confirmed { background: #d4edda; color: #155724; }
+        .status-assigned { background: #cce5ff; color: #004085; }
+        .status-in_progress { background: #e2e3e5; color: #383d41; }
+        .status-completed { background: #d1ecf1; color: #0c5460; }
+        .status-canceled { background: #f8d7da; color: #721c24; }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pagination button.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .ticket-row {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .ticket-row:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .detail-section {
+            margin-bottom: 30px;
+        }
+        
+        .detail-section h3 {
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .detail-value {
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-brand">
+            <h1>美大客服支持系统</h1>
+        </div>
+        <div class="nav-menu">
+            <a href="/admin/dashboard">控制台</a>
+            <a href="/issues" class="active">工单管理</a>
+            <a href="/admin/roles">角色管理</a>
+            <a href="/admin/my-jobs">我的工单</a>
+            <div class="user-menu">
+                <span id="username">加载中...</span>
+                <button onclick="logout()">退出</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="tickets-container">
+        <div class="page-header">
+            <h2>工单管理</h2>
+            <p>管理客户服务工单的完整生命周期</p>
+        </div>
+
+        <!-- 筛选器 -->
+        <div class="filters">
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label>状态</label>
+                    <select id="statusFilter">
+                        <option value="">全部状态</option>
+                        <option value="BOOKED">已预约</option>
+                        <option value="CONFIRMED">已确认</option>
+                        <option value="ASSIGNED">已分配</option>
+                        <option value="IN_PROGRESS">进行中</option>
+                        <option value="COMPLETED">已完成</option>
+                        <option value="CANCELED">已取消</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>技师</label>
+                    <select id="technicianFilter">
+                        <option value="">全部技师</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>开始日期</label>
+                    <input type="date" id="dateFromFilter">
+                </div>
+                
+                <div class="filter-group">
+                    <label>结束日期</label>
+                    <input type="date" id="dateToFilter">
+                </div>
+                
+                <div class="filter-group">
+                    <label>搜索</label>
+                    <input type="text" id="searchFilter" placeholder="客户姓名、地址或问题描述">
+                </div>
+                
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-primary" onclick="applyFilters()">搜索</button>
+                </div>
+                
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-secondary" onclick="resetFilters()">重置</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 工单表格 -->
+        <div class="tickets-table">
+            <div class="table-header">
+                <div class="table-title">工单列表</div>
+                <div class="table-actions">
+                    <button class="btn btn-primary" onclick="refreshTickets()">刷新</button>
+                </div>
+            </div>
+
+            <div id="ticketsContent">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+
+        <!-- 分页 -->
+        <div class="pagination" id="pagination" style="display: none;">
+            <button id="prevPage" onclick="changePage(-1)">上一页</button>
+            <span id="pageInfo">第 1 页，共 1 页</span>
+            <button id="nextPage" onclick="changePage(1)">下一页</button>
+        </div>
+    </div>
+
+    <!-- 工单详情模态框 -->
+    <div id="ticketModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">工单详情</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- 详情内容将通过JavaScript动态加载 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let totalPages = 1;
+        let currentFilters = {};
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadTechnicians();
+            loadTickets();
+        });
+
+        // 检查用户认证
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/me', {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    document.getElementById('username').textContent = user.username;
+                } else {
+                    window.location.href = '/admin';
+                }
+            } catch (error) {
+                console.error('认证检查失败:', error);
+                window.location.href = '/admin';
+            }
+        }
+
+        // 加载技师列表
+        async function loadTechnicians() {
+            try {
+                const response = await fetch('/api/technicians', {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const technicians = await response.json();
+                    const select = document.getElementById('technicianFilter');
+                    
+                    technicians.forEach(tech => {
+                        const option = document.createElement('option');
+                        option.value = tech.id;
+                        option.textContent = tech.name;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('加载技师列表失败:', error);
+            }
+        }
+
+        // 加载工单列表
+        async function loadTickets() {
+            const content = document.getElementById('ticketsContent');
+            content.innerHTML = '<div class="loading">加载中...</div>';
+
+            try {
+                const params = new URLSearchParams({
+                    page: currentPage,
+                    page_size: 20,
+                    ...currentFilters
+                });
+
+                const response = await fetch(`/api/tickets?${params}`, {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    renderTickets(data.tickets);
+                    updatePagination(data);
+                } else if (response.status === 401) {
+                    window.location.href = '/admin';
+                } else {
+                    throw new Error('加载失败');
+                }
+            } catch (error) {
+                console.error('加载工单失败:', error);
+                content.innerHTML = '<div class="error">加载工单失败，请稍后重试</div>';
+            }
+        }
+
+        // 渲染工单列表
+        function renderTickets(tickets) {
+            const content = document.getElementById('ticketsContent');
+            
+            if (tickets.length === 0) {
+                content.innerHTML = '<div class="empty-state">暂无工单数据</div>';
+                return;
+            }
+
+            const table = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>工单编号</th>
+                            <th>客户信息</th>
+                            <th>预约时间</th>
+                            <th>问题描述</th>
+                            <th>状态</th>
+                            <th>分配技师</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tickets.map(ticket => `
+                            <tr class="ticket-row" onclick="openTicketDetail('${ticket.id}')">
+                                <td>${ticket.id.substring(0, 8)}...</td>
+                                <td>
+                                    <div><strong>${ticket.customer_name}</strong></div>
+                                    <div style="font-size: 12px; color: #666;">${ticket.address}</div>
+                                </td>
+                                <td>
+                                    ${ticket.appointment_date}<br>
+                                    <span style="font-size: 12px; color: #666;">${ticket.appointment_time}</span>
+                                </td>
+                                <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">
+                                    ${ticket.issue_desc}
+                                </td>
+                                <td>
+                                    <span class="status-badge status-${ticket.status.toLowerCase()}">
+                                        ${getStatusText(ticket.status)}
+                                    </span>
+                                </td>
+                                <td>${ticket.technician ? ticket.technician.name : '未分配'}</td>
+                                <td>${formatDateTime(ticket.created_at)}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); openTicketDetail('${ticket.id}')">
+                                        详情
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            content.innerHTML = table;
+        }
+
+        // 更新分页
+        function updatePagination(data) {
+            totalPages = data.total_pages;
+            currentPage = data.page;
+            
+            const pagination = document.getElementById('pagination');
+            const pageInfo = document.getElementById('pageInfo');
+            const prevBtn = document.getElementById('prevPage');
+            const nextBtn = document.getElementById('nextPage');
+            
+            if (totalPages > 1) {
+                pagination.style.display = 'flex';
+                pageInfo.textContent = `第 ${currentPage} 页，共 ${totalPages} 页 (总计 ${data.total} 条)`;
+                prevBtn.disabled = currentPage <= 1;
+                nextBtn.disabled = currentPage >= totalPages;
+            } else {
+                pagination.style.display = 'none';
+            }
+        }
+
+        // 应用筛选器
+        function applyFilters() {
+            currentFilters = {};
+            
+            const status = document.getElementById('statusFilter').value;
+            const technician = document.getElementById('technicianFilter').value;
+            const dateFrom = document.getElementById('dateFromFilter').value;
+            const dateTo = document.getElementById('dateToFilter').value;
+            const search = document.getElementById('searchFilter').value.trim();
+            
+            if (status) currentFilters.status = status;
+            if (technician) currentFilters.technician_id = technician;
+            if (dateFrom) currentFilters.date_from = dateFrom;
+            if (dateTo) currentFilters.date_to = dateTo;
+            if (search) currentFilters.q = search;
+            
+            currentPage = 1;
+            loadTickets();
+        }
+
+        // 重置筛选器
+        function resetFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('technicianFilter').value = '';
+            document.getElementById('dateFromFilter').value = '';
+            document.getElementById('dateToFilter').value = '';
+            document.getElementById('searchFilter').value = '';
+            
+            currentFilters = {};
+            currentPage = 1;
+            loadTickets();
+        }
+
+        // 翻页
+        function changePage(delta) {
+            const newPage = currentPage + delta;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                loadTickets();
+            }
+        }
+
+        // 刷新工单
+        function refreshTickets() {
+            loadTickets();
+        }
+
+        // 打开工单详情
+        async function openTicketDetail(ticketId) {
+            const modal = document.getElementById('ticketModal');
+            const modalBody = document.getElementById('modalBody');
+            
+            modalBody.innerHTML = '<div class="loading">加载中...</div>';
+            modal.style.display = 'block';
+            
+            try {
+                const response = await fetch(`/api/tickets/${ticketId}`, {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const ticket = await response.json();
+                    renderTicketDetail(ticket);
+                } else {
+                    throw new Error('加载失败');
+                }
+            } catch (error) {
+                console.error('加载工单详情失败:', error);
+                modalBody.innerHTML = '<div class="error">加载详情失败，请稍后重试</div>';
+            }
+        }
+
+        // 渲染工单详情
+        function renderTicketDetail(ticket) {
+            const modalBody = document.getElementById('modalBody');
+            
+            modalBody.innerHTML = `
+                <div class="detail-section">
+                    <h3>基本信息</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">工单编号</div>
+                            <div class="detail-value">${ticket.id}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">客户姓名</div>
+                            <div class="detail-value">${ticket.customer_name}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">服务地址</div>
+                            <div class="detail-value">${ticket.address}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">预约日期</div>
+                            <div class="detail-value">${ticket.appointment_date}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">预约时间</div>
+                            <div class="detail-value">${ticket.appointment_time}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">当前状态</div>
+                            <div class="detail-value">
+                                <span class="status-badge status-${ticket.status.toLowerCase()}">
+                                    ${getStatusText(ticket.status)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>问题描述</h3>
+                    <div class="detail-value">${ticket.issue_desc}</div>
+                </div>
+
+                ${ticket.technician ? `
+                <div class="detail-section">
+                    <h3>分配技师</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">技师姓名</div>
+                            <div class="detail-value">${ticket.technician.name}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">联系电话</div>
+                            <div class="detail-value">${ticket.technician.phone_masked}</div>
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+
+                <div class="detail-section">
+                    <h3>操作按钮</h3>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        ${getActionButtons(ticket)}
+                    </div>
+                </div>
+
+                ${ticket.images && ticket.images.length > 0 ? `
+                <div class="detail-section">
+                    <h3>回执图片 (${ticket.images.length})</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px;">
+                        ${ticket.images.map(image => `
+                            <div style="border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
+                                <img src="${image.url}" alt="${image.file_name}" 
+                                     style="width: 100%; height: 120px; object-fit: cover; cursor: pointer;"
+                                     onclick="window.open('${image.url}', '_blank')">
+                                <div style="padding: 8px; font-size: 12px; color: #666;">
+                                    ${image.file_name}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+
+                ${ticket.events && ticket.events.length > 0 ? `
+                <div class="detail-section">
+                    <h3>操作历史</h3>
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        ${ticket.events.map(event => `
+                            <div style="padding: 10px; border-left: 3px solid #007bff; margin-bottom: 10px; background: #f8f9fa;">
+                                <div style="font-weight: 500;">${getActionText(event.action)}</div>
+                                <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                                    ${formatDateTime(event.created_at)}
+                                    ${event.details_json ? ` • ${JSON.parse(event.details_json).note || ''}` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+            `;
+        }
+
+        // 获取操作按钮
+        function getActionButtons(ticket) {
+            const buttons = [];
+            
+            if (ticket.status === 'BOOKED') {
+                buttons.push(`<button class="btn btn-primary" onclick="confirmTicket('${ticket.id}')">确认预约</button>`);
+            }
+            
+            if (ticket.status === 'CONFIRMED') {
+                buttons.push(`<button class="btn btn-primary" onclick="assignTicket('${ticket.id}')">分配技师</button>`);
+            }
+            
+            if (['ASSIGNED', 'IN_PROGRESS'].includes(ticket.status)) {
+                buttons.push(`<button class="btn btn-primary" onclick="uploadReceipt('${ticket.id}')">上传回执</button>`);
+                
+                // 检查是否有回执图片
+                if (ticket.images && ticket.images.some(img => img.type === 'RECEIPT')) {
+                    buttons.push(`<button class="btn btn-primary" onclick="completeTicket('${ticket.id}')">完成工单</button>`);
+                }
+            }
+            
+            return buttons.join('');
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('ticketModal').style.display = 'none';
+        }
+
+        // 工具函数
+        function getStatusText(status) {
+            const statusMap = {
+                'BOOKED': '已预约',
+                'CONFIRMED': '已确认',
+                'ASSIGNED': '已分配',
+                'IN_PROGRESS': '进行中',
+                'COMPLETED': '已完成',
+                'CANCELED': '已取消'
+            };
+            return statusMap[status] || status;
+        }
+
+        function getActionText(action) {
+            const actionMap = {
+                'CONFIRM': '确认预约',
+                'ASSIGN': '分配技师',
+                'UPLOAD_RECEIPT': '上传回执',
+                'COMPLETE': '完成工单',
+                'CANCEL': '取消工单',
+                'STATUS_CHANGE': '状态变更'
+            };
+            return actionMap[action] || action;
+        }
+
+        function formatDateTime(dateTimeStr) {
+            return new Date(dateTimeStr).toLocaleString('zh-CN');
+        }
+
+        // 工单操作函数
+        async function confirmTicket(ticketId) {
+            if (!confirm('确认此预约？')) return;
+            
+            try {
+                const response = await fetch(`/api/tickets/${ticketId}/confirm`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    alert('预约确认成功！');
+                    closeModal();
+                    loadTickets();
+                } else {
+                    throw new Error('确认失败');
+                }
+            } catch (error) {
+                console.error('确认预约失败:', error);
+                alert('确认失败，请稍后重试');
+            }
+        }
+
+        async function assignTicket(ticketId) {
+            // 简化版本：自动分配
+            if (!confirm('自动分配技师？')) return;
+            
+            try {
+                const response = await fetch(`/api/tickets/${ticketId}/assign`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        auto: true,
+                        version: 1  // 简化版本，实际应该从详情中获取
+                    }),
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    alert('技师分配成功！');
+                    closeModal();
+                    loadTickets();
+                } else {
+                    throw new Error('分配失败');
+                }
+            } catch (error) {
+                console.error('分配技师失败:', error);
+                alert('分配失败，请稍后重试');
+            }
+        }
+
+        function uploadReceipt(ticketId) {
+            // 创建文件选择器
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = async function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                try {
+                    const response = await fetch(`/api/tickets/${ticketId}/images`, {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'include'
+                    });
+                    
+                    if (response.ok) {
+                        alert('回执上传成功！');
+                        openTicketDetail(ticketId); // 刷新详情
+                    } else {
+                        throw new Error('上传失败');
+                    }
+                } catch (error) {
+                    console.error('上传回执失败:', error);
+                    alert('上传失败，请稍后重试');
+                }
+            };
+            input.click();
+        }
+
+        async function completeTicket(ticketId) {
+            if (!confirm('确认完成此工单？')) return;
+            
+            try {
+                const response = await fetch(`/api/tickets/${ticketId}/complete`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    alert('工单完成！');
+                    closeModal();
+                    loadTickets();
+                } else {
+                    throw new Error('完成失败');
+                }
+            } catch (error) {
+                console.error('完成工单失败:', error);
+                alert('完成失败，请稍后重试');
+            }
+        }
+
+        // 退出登录
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+            } catch (error) {
+                console.error('退出登录失败:', error);
+            }
+            window.location.href = '/admin';
+        }
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('ticketModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html> 

@@ -2,81 +2,71 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=1.0, maximum-scale=5.0">
     <title>{% block title %}美大客服支持中心{% endblock %}</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 自定义样式 -->
-    <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        }
-    </style>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='80'%3E🔥%3C/text%3E%3C/svg%3E">
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="/static/styles.css" rel="stylesheet">
+    {% block head %}{% endblock %}
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- 导航栏 -->
-    <header class="bg-white shadow-sm">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <nav class="flex justify-between items-center">
-                <a href="/" class="text-xl font-medium text-gray-900" aria-label="返回首页">
-                    美大客服支持中心
-                </a>
-                <div class="text-sm text-gray-500">
-                    <a href="#" class="hover:text-blue-600">联系我们</a>
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/" class="text-xl font-bold text-gray-800 flex items-center space-x-2">
+                            <span class="text-2xl">🔥</span>
+                            <span class="hidden sm:inline">美大客服支持中心</span>
+                            <span class="sm:hidden">美大客服</span>
+                        </a>
+                    </div>
                 </div>
-            </nav>
+            </div>
         </div>
-    </header>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    {% block breadcrumb %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol class="flex items-center space-x-1 text-sm text-gray-500">
+                <li>
+                    <a href="/" class="hover:text-gray-700">首页</a>
+                </li>
+                {% block breadcrumb_items %}{% endblock %}
+            </ol>
+        </nav>
+    </div>
+    {% endblock %}
 
     <!-- 主要内容 -->
     <main class="flex-grow">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             {% if error %}
-            <!-- 错误页面 -->
-            <div class="text-center py-16">
-                <h1 class="text-4xl font-medium text-gray-900 mb-4">{{ error_msg }}</h1>
-                <p class="text-gray-500 mb-8">{{ error_detail }}</p>
-                <a href="/" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    返回首页
-                </a>
+            <div class="bg-white rounded-lg shadow-sm p-6 text-center">
+                <h1 class="text-2xl font-bold text-red-500 mb-2">{{ error_msg }}</h1>
+                <p class="text-gray-600">{{ error_detail }}</p>
+                <a href="/" class="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">返回首页</a>
             </div>
             {% else %}
-                <!-- 面包屑 -->
-                {% block breadcrumb %}
-                <nav class="text-sm text-gray-500 mb-6" aria-label="面包屑导航">
-                    <ol class="list-none p-0 flex items-center space-x-2">
-                        <li>
-                            <a href="/" class="text-blue-600 hover:text-blue-800">首页</a>
-                        </li>
-                        {% block breadcrumb_items %}{% endblock %}
-                    </ol>
-                </nav>
-                {% endblock %}
-
-                <!-- 页面内容 -->
                 {% block content %}{% endblock %}
             {% endif %}
         </div>
     </main>
 
     <!-- 页脚 -->
-    <footer class="bg-white border-t border-gray-200 mt-auto">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex flex-col sm:flex-row justify-between items-center">
-                <div class="text-sm text-gray-500 mb-4 sm:mb-0">
-                    &copy; 2023 美大客服支持中心. 保留所有权利.
-                </div>
-                <div class="flex space-x-6">
-                    <a href="#" class="text-sm text-gray-500 hover:text-blue-600">隐私政策</a>
-                    <a href="#" class="text-sm text-gray-500 hover:text-blue-600">使用条款</a>
-                    <a href="#" class="text-sm text-gray-500 hover:text-blue-600">联系我们</a>
-                </div>
-            </div>
+    <footer class="bg-white border-t border-gray-200 py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-gray-500 text-sm">© 2023 美大客服支持中心</p>
         </div>
     </footer>
 
-    <!-- JavaScript -->
-    <script src="{{ url_for('static', path='app.js') }}"></script>
+    <script src="/static/app.js"></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html> 

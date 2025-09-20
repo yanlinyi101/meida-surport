@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, minimum-scale=1.0, maximum-scale=5.0">
+    <title>美大热水器 - 问题选择 - 美大客服支持中心</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='80'%3E🔥%3C/text%3E%3C/svg%3E">
+    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="/static/styles.css" rel="stylesheet">
+    
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/" class="text-xl font-bold text-gray-800 flex items-center space-x-2">
+                            <span class="text-2xl">🔥</span>
+                            <span class="hidden sm:inline">美大客服支持中心</span>
+                            <span class="sm:hidden">美大客服</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 面包屑导航 -->
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol class="flex items-center space-x-1 text-sm text-gray-500">
+                <li>
+                    <a href="/" class="hover:text-gray-700">首页</a>
+                </li>
+                
+<li class="flex items-center">
+    <svg class="h-3 w-3 text-gray-400 mx-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+    </svg>
+    <a href="/issues/water-heater" class="hover:text-gray-700">美大热水器</a>
+</li>
+
+            </ol>
+        </nav>
+    </div>
+    
+
+    <!-- 主要内容 -->
+    <main class="flex-grow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            
+                
+<div class="mb-6">
+    <div class="flex items-center space-x-3">
+        <div class="icon-container">
+            <span class="emoji-icon">🚿</span>
+        </div>
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">美大热水器</h1>
+            <p class="text-gray-600">请选择您遇到的问题</p>
+        </div>
+    </div>
+</div>
+
+<!-- 搜索框 -->
+<div class="mb-6">
+    <div class="relative">
+        <input type="text" id="issue-search" placeholder="搜索问题..." class="search-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <svg class="search-icon text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+        </div>
+    </div>
+</div>
+
+<!-- 问题列表 -->
+<div class="space-y-4" id="issue-list">
+    
+    <a href="/solution/water-heater/W01" class="issue-card block bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow" data-title="不出热水">
+        <h2 class="text-lg font-medium text-gray-900">不出热水</h2>
+        
+        <span class="inline-block mt-1 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">故障码: W01</span>
+        
+    </a>
+    
+    <a href="/solution/water-heater/W02" class="issue-card block bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow" data-title="水温不稳定">
+        <h2 class="text-lg font-medium text-gray-900">水温不稳定</h2>
+        
+        <span class="inline-block mt-1 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">故障码: W02</span>
+        
+    </a>
+    
+    <a href="/solution/water-heater/W03" class="issue-card block bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow" data-title="漏水">
+        <h2 class="text-lg font-medium text-gray-900">漏水</h2>
+        
+        <span class="inline-block mt-1 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">故障码: W03</span>
+        
+    </a>
+    
+    <a href="/solution/water-heater/other" class="issue-card block bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow" data-title="其他问题">
+        <h2 class="text-lg font-medium text-gray-900">其他问题</h2>
+        
+    </a>
+    
+</div>
+
+<!-- 无搜索结果提示 -->
+<div class="no-results" id="no-results">
+    <p>没有找到匹配的问题</p>
+</div>
+
+            
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-white border-t border-gray-200 py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-gray-500 text-sm">© 2023 美大客服支持中心</p>
+        </div>
+    </footer>
+
+    <script src="/static/app.js"></script>
+    
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('issue-search');
+        const issueCards = document.querySelectorAll('.issue-card');
+        const noResults = document.getElementById('no-results');
+        
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            let hasResults = false;
+            
+            issueCards.forEach(card => {
+                const issueTitle = card.getAttribute('data-title').toLowerCase();
+                
+                if (issueTitle.includes(searchTerm)) {
+                    card.style.display = '';
+                    hasResults = true;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // 显示或隐藏无结果提示
+            if (hasResults || searchTerm === '') {
+                noResults.classList.remove('show');
+            } else {
+                noResults.classList.add('show');
+            }
+        });
+    });
+</script>
+
+</body>
+</html> 

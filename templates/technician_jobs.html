@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的工单 - 美大客服支持系统</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .jobs-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .job-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #007bff;
+        }
+        
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .job-id {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .job-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-assigned { background: #cce5ff; color: #004085; }
+        .status-in_progress { background: #e2e3e5; color: #383d41; }
+        .status-completed { background: #d1ecf1; color: #0c5460; }
+        
+        .job-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .info-value {
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .job-description {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .job-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .upload-progress {
+            margin-top: 10px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #dee2e6;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #007bff;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-brand">
+            <h1>美大客服支持系统 - 技师端</h1>
+        </div>
+        <div class="nav-menu">
+            <a href="/admin/dashboard">控制台</a>
+            <a href="/issues">工单管理</a>
+            <a href="/admin/my-jobs" class="active">我的工单</a>
+            <div class="user-menu">
+                <span id="username">加载中...</span>
+                <button onclick="logout()">退出</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="jobs-container">
+        <div class="page-header">
+            <h2>我的工单</h2>
+            <p>管理分配给您的服务工单</p>
+            <button class="btn btn-secondary" onclick="loadJobs()" style="margin-top: 10px;">刷新</button>
+        </div>
+
+        <div id="jobsContent">
+            <div class="loading">加载中...</div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+        });
+
+        // 检查用户认证
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/me', {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    currentUser = await response.json();
+                    document.getElementById('username').textContent = currentUser.username;
+                    loadJobs();
+                } else {
+                    window.location.href = '/admin';
+                }
+            } catch (error) {
+                console.error('认证检查失败:', error);
+                window.location.href = '/admin';
+            }
+        }
+
+        // 加载我的工单
+        async function loadJobs() {
+            const content = document.getElementById('jobsContent');
+            content.innerHTML = '<div class="loading">加载中...</div>';
+
+            try {
+                // 获取分配给当前用户的工单
+                // 注意：这里需要根据实际的用户-技师关联来查询
+                const response = await fetch(`/api/tickets?technician_id=${currentUser.id}&status=ASSIGNED,IN_PROGRESS&page_size=50`, {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    renderJobs(data.tickets);
+                } else if (response.status === 401) {
+                    window.location.href = '/admin';
+                } else {
+                    throw new Error('加载失败');
+                }
+            } catch (error) {
+                console.error('加载工单失败:', error);
+                content.innerHTML = '<div class="error">加载工单失败，请稍后重试</div>';
+            }
+        }
+
+        // 渲染工单列表
+        function renderJobs(jobs) {
+            const content = document.getElementById('jobsContent');
+            
+            if (jobs.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <h3>暂无分配的工单</h3>
+                        <p>当有新工单分配给您时，会在这里显示</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const jobsHtml = jobs.map(job => `
+                <div class="job-card">
+                    <div class="job-header">
+                        <div class="job-id">工单编号: ${job.id.substring(0, 8)}...</div>
+                        <div class="job-status status-${job.status.toLowerCase()}">
+                            ${getStatusText(job.status)}
+                        </div>
+                    </div>
+                    
+                    <div class="job-info">
+                        <div class="info-item">
+                            <div class="info-label">客户姓名</div>
+                            <div class="info-value">${job.customer_name}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">服务地址</div>
+                            <div class="info-value">${job.address}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">预约时间</div>
+                            <div class="info-value">${job.appointment_date} ${job.appointment_time}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">创建时间</div>
+                            <div class="info-value">${formatDateTime(job.created_at)}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="job-description">
+                        <div class="info-label">问题描述</div>
+                        <div style="margin-top: 5px;">${job.issue_desc}</div>
+                    </div>
+                    
+                    <div class="job-actions">
+                        ${getJobActions(job)}
+                    </div>
+                    
+                    <div id="upload-progress-${job.id}" class="upload-progress">
+                        <div>上传中...</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill-${job.id}"></div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            content.innerHTML = jobsHtml;
+        }
+
+        // 获取工单操作按钮
+        function getJobActions(job) {
+            const actions = [];
+            
+            if (job.status === 'ASSIGNED') {
+                actions.push(`<button class="btn btn-primary" onclick="startJob('${job.id}')">开始服务</button>`);
+            }
+            
+            if (job.status === 'IN_PROGRESS') {
+                actions.push(`<button class="btn btn-success" onclick="uploadReceipt('${job.id}')">上传回执</button>`);
+                
+                // 如果有回执图片，显示完成按钮
+                if (job.images && job.images.some(img => img.type === 'RECEIPT')) {
+                    actions.push(`<button class="btn btn-primary" onclick="completeJob('${job.id}')">完成工单</button>`);
+                }
+            }
+            
+            return actions.join('');
+        }
+
+        // 开始服务
+        async function startJob(jobId) {
+            if (!confirm('确认开始此服务工单？')) return;
+            
+            try {
+                const response = await fetch(`/api/tickets/${jobId}/status`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        status: 'IN_PROGRESS',
+                        version: 1  // 简化版本，实际应该获取当前版本
+                    }),
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    alert('工单已开始！');
+                    loadJobs();
+                } else {
+                    throw new Error('操作失败');
+                }
+            } catch (error) {
+                console.error('开始工单失败:', error);
+                alert('操作失败，请稍后重试');
+            }
+        }
+
+        // 上传回执
+        function uploadReceipt(jobId) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.multiple = true;  // 允许多选
+            
+            input.onchange = async function(event) {
+                const files = Array.from(event.target.files);
+                if (files.length === 0) return;
+                
+                const progressDiv = document.getElementById(`upload-progress-${jobId}`);
+                const progressFill = document.getElementById(`progress-fill-${jobId}`);
+                
+                progressDiv.style.display = 'block';
+                
+                try {
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        
+                        // 更新进度
+                        const progress = ((i + 1) / files.length) * 100;
+                        progressFill.style.width = progress + '%';
+                        
+                        const response = await fetch(`/api/tickets/${jobId}/images`, {
+                            method: 'POST',
+                            body: formData,
+                            credentials: 'include'
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error(`上传 ${file.name} 失败`);
+                        }
+                    }
+                    
+                    alert(`成功上传 ${files.length} 张回执图片！`);
+                    loadJobs();
+                    
+                } catch (error) {
+                    console.error('上传回执失败:', error);
+                    alert('上传失败：' + error.message);
+                } finally {
+                    progressDiv.style.display = 'none';
+                    progressFill.style.width = '0%';
+                }
+            };
+            
+            input.click();
+        }
+
+        // 完成工单
+        async function completeJob(jobId) {
+            if (!confirm('确认完成此工单？完成后无法撤销。')) return;
+            
+            try {
+                const response = await fetch(`/api/tickets/${jobId}/complete`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    alert('工单完成！');
+                    loadJobs();
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.detail || '完成失败');
+                }
+            } catch (error) {
+                console.error('完成工单失败:', error);
+                alert('完成失败：' + error.message);
+            }
+        }
+
+        // 工具函数
+        function getStatusText(status) {
+            const statusMap = {
+                'ASSIGNED': '已分配',
+                'IN_PROGRESS': '进行中',
+                'COMPLETED': '已完成'
+            };
+            return statusMap[status] || status;
+        }
+
+        function formatDateTime(dateTimeStr) {
+            return new Date(dateTimeStr).toLocaleString('zh-CN');
+        }
+
+        // 退出登录
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+            } catch (error) {
+                console.error('退出登录失败:', error);
+            }
+            window.location.href = '/admin';
+        }
+    </script>
+</body>
+</html> 

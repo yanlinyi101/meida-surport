@@ -1,0 +1,17 @@
+{
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.profiles.windows": {
+      "PowerShell": {
+        "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        "args": ["-NoLogo"]
+      },
+      "Command Prompt": {
+        "path": "C:\\Windows\\System32\\cmd.exe"
+      }
+    },
+    "terminal.integrated.automationShell.windows": null,
+    "terminal.integrated.shellIntegration.enabled": false,
+    "terminal.integrated.inheritEnv": true,
+    "terminal.integrated.rendererType": "dom"
+  }
+  

@@ -1,0 +1,3 @@
+# Cloudflare Pages 重定向配置
+/admin/* /admin/login.html 200
+/api/* https://your-backend-api.com/api/:splat 200

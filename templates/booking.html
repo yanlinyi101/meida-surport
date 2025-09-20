@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>服务预约 - 美大客服支持系统</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .booking-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .submit-btn {
+            background: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        
+        .submit-btn:hover {
+            background: #0056b3;
+        }
+        
+        .submit-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .alert {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .required {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🏠 美大客服支持系统</h1>
+            <nav>
+                <a href="/">首页</a>
+                <a href="/booking" class="active">服务预约</a>
+                <a href="/admin">管理后台</a>
+            </nav>
+        </header>
+
+        <main class="main-content">
+            <div class="booking-container">
+                <h2>服务预约</h2>
+                <p>请填写以下信息，我们将尽快安排技术人员为您提供服务。</p>
+                
+                <div id="alert" class="alert"></div>
+                
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>正在提交预约信息...</p>
+                </div>
+                
+                <form id="bookingForm">
+                    <div class="form-group">
+                        <label for="name">姓名 <span class="required">*</span></label>
+                        <input type="text" id="name" name="name" required maxlength="50" 
+                               placeholder="请输入您的姓名">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">联系电话 <span class="required">*</span></label>
+                        <input type="tel" id="phone" name="phone" required maxlength="30" 
+                               placeholder="请输入您的联系电话">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address">服务地址 <span class="required">*</span></label>
+                        <input type="text" id="address" name="address" required maxlength="200" 
+                               placeholder="请输入详细的服务地址">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="date">预约日期 <span class="required">*</span></label>
+                            <input type="date" id="date" name="date" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="time">预约时间 <span class="required">*</span></label>
+                            <input type="time" id="time" name="time" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="issue">问题描述 <span class="required">*</span></label>
+                        <textarea id="issue" name="issue" required maxlength="500" 
+                                placeholder="请详细描述您遇到的问题，以便我们更好地为您服务"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn" id="submitBtn">提交预约</button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 设置最小日期为今天
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('date');
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.min = today;
+            
+            // 设置默认时间为当前时间的下一小时
+            const timeInput = document.getElementById('time');
+            const now = new Date();
+            now.setHours(now.getHours() + 1);
+            timeInput.value = now.toTimeString().slice(0, 5);
+        });
+
+        // 表单提交处理
+        document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const alert = document.getElementById('alert');
+            
+            // 显示加载状态
+            submitBtn.disabled = true;
+            loading.style.display = 'block';
+            alert.style.display = 'none';
+            
+            // 收集表单数据
+            const formData = new FormData(this);
+            const bookingData = {
+                name: formData.get('name'),
+                phone: formData.get('phone'),
+                address: formData.get('address'),
+                date: formData.get('date'),
+                time: formData.get('time'),
+                issue: formData.get('issue')
+            };
+            
+            try {
+                const response = await fetch('/api/public/booking', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(bookingData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    // 成功提示
+                    alert.className = 'alert alert-success';
+                    alert.textContent = `${result.message} 预约编号：${result.booking_id}`;
+                    alert.style.display = 'block';
+                    
+                    // 重置表单
+                    this.reset();
+                    
+                    // 重新设置日期和时间的默认值
+                    const today = new Date().toISOString().split('T')[0];
+                    document.getElementById('date').min = today;
+                    
+                    const now = new Date();
+                    now.setHours(now.getHours() + 1);
+                    document.getElementById('time').value = now.toTimeString().slice(0, 5);
+                    
+                } else {
+                    throw new Error(result.detail || result.message || '预约提交失败');
+                }
+                
+            } catch (error) {
+                // 错误提示
+                alert.className = 'alert alert-error';
+                alert.textContent = '预约提交失败：' + error.message;
+                alert.style.display = 'block';
+            } finally {
+                // 恢复按钮状态
+                submitBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        });
+
+        // 表单验证
+        document.getElementById('phone').addEventListener('input', function(e) {
+            const value = e.target.value;
+            // 简单的电话号码格式验证
+            if (value && !/^[0-9-+\s()]+$/.test(value)) {
+                e.target.setCustomValidity('请输入有效的电话号码');
+            } else {
+                e.target.setCustomValidity('');
+            }
+        });
+    </script>
+</body>
+</html> 

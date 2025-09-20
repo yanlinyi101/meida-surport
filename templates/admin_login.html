@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员登录 - 美大客服支持系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .login-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .login-header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(40, 167, 69, 0.8);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            margin-bottom: 20px;
+        }
+        
+        .login-btn:hover {
+            background: rgba(40, 167, 69, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .login-btn:disabled {
+            background: rgba(108, 117, 125, 0.5);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .error-message {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.9rem;
+        }
+        
+        .success-message {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.9rem;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .back-link a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+        
+        .default-account {
+            background: rgba(23, 162, 184, 0.2);
+            border: 1px solid rgba(23, 162, 184, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .default-account h4 {
+            margin-bottom: 8px;
+            color: #17a2b8;
+        }
+        
+        .default-account p {
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                margin: 20px;
+                padding: 30px 25px;
+            }
+            
+            .login-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>👨‍💼 管理员登录</h1>
+            <p>请输入管理员账号信息</p>
+        </div>
+        
+        <form id="loginForm">
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
+            
+            <div class="form-group">
+                <label for="email">邮箱地址</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    placeholder="请输入管理员邮箱"
+                    required
+                    autocomplete="username"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="请输入管理员密码"
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+            
+            <button type="submit" class="login-btn" id="loginBtn">
+                🔐 登录管理后台
+            </button>
+            
+            <div id="loading" class="loading">
+                <div>🔄 正在验证登录信息...</div>
+            </div>
+        </form>
+        
+        <div class="default-account">
+            <h4>💡 默认管理员账号</h4>
+            <p>📧 邮箱: admin@meidasupport.com</p>
+            <p>🔑 密码: admin123456</p>
+        </div>
+        
+        <div class="back-link">
+            <a href="/">🏠 返回用户端首页</a>
+        </div>
+    </div>
+
+    <script>
+        // DOM元素
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const loading = document.getElementById('loading');
+        
+        // 预填充默认账号（仅开发环境）
+        emailInput.value = 'admin@meidasupport.com';
+        passwordInput.value = 'admin123456';
+        
+        // 表单提交处理
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            
+            // 基本验证
+            if (!email || !password) {
+                showError('请填写完整的登录信息');
+                return;
+            }
+            
+            // 显示加载状态
+            showLoading(true);
+            hideMessages();
+            
+            try {
+                // 发送登录请求
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.ok) {
+                    // 登录成功
+                    showSuccess('登录成功！正在跳转到管理后台...');
+                    
+                    // 延迟跳转，让用户看到成功消息
+                    setTimeout(() => {
+                        window.location.href = '/admin/dashboard';
+                    }, 1500);
+                    
+                } else {
+                    // 登录失败
+                    const errorMsg = data.detail || data.message || '登录失败，请检查账号密码';
+                    showError(errorMsg);
+                }
+                
+            } catch (error) {
+                console.error('登录请求失败:', error);
+                showError('网络连接失败，请检查网络连接后重试');
+            } finally {
+                showLoading(false);
+            }
+        });
+        
+        // 显示错误消息
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        }
+        
+        // 显示成功消息
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+        }
+        
+        // 隐藏所有消息
+        function hideMessages() {
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+        }
+        
+        // 显示/隐藏加载状态
+        function showLoading(show) {
+            if (show) {
+                loginBtn.disabled = true;
+                loginBtn.textContent = '🔄 登录中...';
+                loading.style.display = 'block';
+            } else {
+                loginBtn.disabled = false;
+                loginBtn.textContent = '🔐 登录管理后台';
+                loading.style.display = 'none';
+            }
+        }
+        
+        // 回车键快速登录
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !loginBtn.disabled) {
+                loginForm.dispatchEvent(new Event('submit'));
+            }
+        });
+        
+        // 页面加载完成后自动聚焦到邮箱输入框
+        window.addEventListener('load', function() {
+            if (!emailInput.value) {
+                emailInput.focus();
+            } else {
+                passwordInput.focus();
+            }
+        });
+    </script>
+</body>
+</html> 

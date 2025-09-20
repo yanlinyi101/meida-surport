@@ -1,99 +1,88 @@
 {% extends "base.html" %}
 
-{% block title %}{{ product.name }} 问题 - 美大客服支持中心{% endblock %}
+{% block title %}{{ product.name }} - 问题选择 - 美大客服支持中心{% endblock %}
 
 {% block breadcrumb_items %}
 <li class="flex items-center">
-    <span class="mx-2 text-gray-400">&gt;</span>
-    <span class="text-gray-600">{{ product.name }}</span>
+    <svg class="h-3 w-3 text-gray-400 mx-1" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+    </svg>
+    <a href="/issues/{{ product.slug }}" class="hover:text-gray-700">{{ product.name }}</a>
 </li>
 {% endblock %}
 
 {% block content %}
-<div class="mb-8">
-    <div class="flex items-center mb-4">
-        <div class="text-4xl mr-4">{{ product.icon }}</div>
-        <h1 class="text-3xl font-medium text-gray-900">{{ product.name }}</h1>
+<div class="mb-6">
+    <div class="flex items-center space-x-3">
+        <div class="icon-container">
+            <span class="emoji-icon">{{ product.icon }}</span>
+        </div>
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">{{ product.name }}</h1>
+            <p class="text-gray-600">请选择您遇到的问题</p>
+        </div>
     </div>
-    <p class="text-gray-500">请选择您遇到的故障代码，我们将为您提供相应的解决方案</p>
 </div>
 
 <!-- 搜索框 -->
-<div class="max-w-md mx-auto mb-6">
+<div class="mb-6">
     <div class="relative">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+        <input type="text" id="issue-search" placeholder="搜索问题..." class="search-input w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <svg class="search-icon text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
         </div>
-        <input 
-            id="issue-search" 
-            type="search" 
-            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
-            placeholder="搜索故障代码..." 
-            aria-label="搜索故障代码"
-        >
     </div>
 </div>
 
-<!-- 故障代码分类 -->
-<div class="mb-6">
-    <h2 class="text-lg font-medium text-gray-900 mb-3">常见故障代码</h2>
-    
-    <!-- 故障代码网格 -->
-    <div id="issues-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-        {% for issue in issues %}
+<!-- 问题列表 -->
+<div class="space-y-4" id="issue-list">
+    {% for issue in issues %}
+    <a href="/solution/{{ product.slug }}/{{ issue.code }}" class="issue-card block bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow" data-title="{{ issue.title }}">
+        <h2 class="text-lg font-medium text-gray-900">{{ issue.title }}</h2>
         {% if issue.code != "other" %}
-        <a 
-            href="/solution/{{ product.slug }}/{{ issue.code }}" 
-            class="issue-card bg-white rounded-md shadow-sm border border-gray-200 p-3 flex flex-col items-center hover:shadow-md transition-shadow focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
-            data-issue-code="{{ issue.code }}"
-            data-issue-title="{{ issue.title }}"
-            tabindex="0"
-        >
-            <div class="text-xl font-bold text-blue-600 mb-1">{{ issue.code }}</div>
-            <p class="text-sm text-gray-700 line-clamp-2">{{ issue.title }}</p>
-        </a>
+        <span class="inline-block mt-1 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">故障码: {{ issue.code }}</span>
         {% endif %}
-        {% endfor %}
-    </div>
+    </a>
+    {% endfor %}
 </div>
 
-<!-- 其他问题 -->
-<div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mt-8">
-    <div class="px-6 py-4 border-b border-gray-200">
-        <h2 class="text-lg font-medium text-gray-900">其他问题</h2>
-    </div>
-    <div class="px-6 py-4">
-        {% for issue in issues %}
-        {% if issue.code == "other" %}
-        <a 
-            href="/solution/{{ product.slug }}/{{ issue.code }}" 
-            class="block hover:bg-gray-50 transition-colors focus:outline-none focus:bg-gray-50 focus:ring-2 focus:ring-inset focus:ring-blue-500 rounded-md p-3"
-            tabindex="0"
-            data-issue-code="{{ issue.code }}"
-            data-issue-title="{{ issue.title }}"
-            aria-label="{{ issue.title }}"
-        >
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-base font-medium text-gray-900">{{ issue.title }}</p>
-                </div>
-                <div class="text-gray-400">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-            </div>
-        </a>
-        {% endif %}
-        {% endfor %}
-    </div>
+<!-- 无搜索结果提示 -->
+<div class="no-results" id="no-results">
+    <p>没有找到匹配的问题</p>
 </div>
+{% endblock %}
 
-<!-- 联系我们 -->
-<div class="mt-8 text-center">
-    <p class="text-gray-500">无法找到您的问题？</p>
-    <a href="#" class="inline-block mt-2 text-blue-600 hover:text-blue-800 hover:underline">联系我们获取帮助</a>
-</div>
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('issue-search');
+        const issueCards = document.querySelectorAll('.issue-card');
+        const noResults = document.getElementById('no-results');
+        
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            let hasResults = false;
+            
+            issueCards.forEach(card => {
+                const issueTitle = card.getAttribute('data-title').toLowerCase();
+                
+                if (issueTitle.includes(searchTerm)) {
+                    card.style.display = '';
+                    hasResults = true;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // 显示或隐藏无结果提示
+            if (hasResults || searchTerm === '') {
+                noResults.classList.remove('show');
+            } else {
+                noResults.classList.add('show');
+            }
+        });
+    });
+</script>
 {% endblock %} 

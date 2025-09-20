@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>角色管理 - 美大客服支持系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .search-box input {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            placeholder-color: rgba(255, 255, 255, 0.7);
+            width: 300px;
+        }
+        
+        .search-box input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background: rgba(40, 167, 69, 0.8);
+            color: white;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: rgba(40, 167, 69, 1);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: rgba(220, 53, 69, 0.8);
+            color: white;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+        
+        .btn-danger:hover {
+            background: rgba(220, 53, 69, 1);
+        }
+        
+        .roles-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+        
+        .roles-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .roles-table th,
+        .roles-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .roles-table th {
+            background: rgba(0, 0, 0, 0.2);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .roles-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .role-badge.system {
+            background: rgba(255, 193, 7, 0.3);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.5);
+        }
+        
+        .role-badge.custom {
+            background: rgba(23, 162, 184, 0.3);
+            color: #17a2b8;
+            border: 1px solid rgba(23, 162, 184, 0.5);
+        }
+        
+        .permissions-count {
+            background: rgba(108, 117, 125, 0.3);
+            color: #6c757d;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+        
+        .error {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            margin-bottom: 20px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            opacity: 0.8;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 20px;
+        }
+        
+        .page-info {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .toolbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+            
+            .roles-table {
+                font-size: 0.9rem;
+            }
+            
+            .roles-table th,
+            .roles-table td {
+                padding: 10px 15px;
+            }
+            
+            .actions {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="/admin/dashboard" class="logo">🛡️ 角色管理</a>
+            <div class="nav-links">
+                <a href="/admin/dashboard">📊 管理后台</a>
+                <a href="/admin/permissions">🔐 权限列表</a>
+                <a href="/admin/users">👥 用户管理</a>
+                <a href="/api/docs">📖 API文档</a>
+            </div>
+        </nav>
+    </header>
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1>🛡️ 角色管理</h1>
+            <p>管理系统角色和权限分配</p>
+        </div>
+        
+        <div class="toolbar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="搜索角色名称..." onkeyup="searchRoles()">
+                <button class="btn btn-secondary" onclick="searchRoles()">🔍 搜索</button>
+            </div>
+            <button class="btn btn-primary" onclick="showCreateRoleModal()">➕ 创建角色</button>
+        </div>
+        
+        <div id="errorMessage" class="error" style="display: none;"></div>
+        
+        <div class="roles-container">
+            <div id="loading" class="loading">
+                <div>📊 正在加载角色数据...</div>
+            </div>
+            
+            <div id="rolesContent" style="display: none;">
+                <table class="roles-table">
+                    <thead>
+                        <tr>
+                            <th>角色名称</th>
+                            <th>描述</th>
+                            <th>类型</th>
+                            <th>权限数量</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rolesTableBody">
+                        <!-- 角色数据将通过JavaScript加载 -->
+                    </tbody>
+                </table>
+                
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <h3>暂无角色数据</h3>
+                    <p>点击上方"创建角色"按钮开始创建您的第一个角色</p>
+                </div>
+            </div>
+            
+            <div class="pagination">
+                <button class="btn btn-secondary btn-sm" id="prevPage" onclick="changePage(-1)">⬅️ 上一页</button>
+                <span class="page-info" id="pageInfo">第 1 页，共 0 条记录</span>
+                <button class="btn btn-secondary btn-sm" id="nextPage" onclick="changePage(1)">下一页 ➡️</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 全局变量
+        let currentPage = 1;
+        let pageSize = 10;
+        let totalRoles = 0;
+        let allRoles = [];
+        let filteredRoles = [];
+        let searchQuery = '';
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRoles();
+        });
+        
+        // 加载角色数据
+        async function loadRoles() {
+            try {
+                showLoading();
+                const response = await fetch('/api/admin/roles?page=1&page_size=100');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                allRoles = data.items || [];
+                totalRoles = data.total || 0;
+                
+                filterAndDisplayRoles();
+                hideLoading();
+                
+            } catch (error) {
+                console.error('加载角色失败:', error);
+                showError('加载角色数据失败: ' + error.message);
+                hideLoading();
+            }
+        }
+        
+        // 过滤和显示角色
+        function filterAndDisplayRoles() {
+            // 应用搜索过滤
+            if (searchQuery.trim()) {
+                filteredRoles = allRoles.filter(role => 
+                    role.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    (role.description && role.description.toLowerCase().includes(searchQuery.toLowerCase()))
+                );
+            } else {
+                filteredRoles = [...allRoles];
+            }
+            
+            // 分页
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            const pageRoles = filteredRoles.slice(startIndex, endIndex);
+            
+            displayRoles(pageRoles);
+            updatePagination();
+        }
+        
+        // 显示角色列表
+        function displayRoles(roles) {
+            const tbody = document.getElementById('rolesTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const rolesContent = document.getElementById('rolesContent');
+            
+            if (roles.length === 0) {
+                rolesContent.style.display = 'block';
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            rolesContent.style.display = 'block';
+            
+            tbody.innerHTML = roles.map(role => `
+                <tr>
+                    <td>
+                        <strong>${escapeHtml(role.name)}</strong>
+                    </td>
+                    <td>${escapeHtml(role.description || '暂无描述')}</td>
+                    <td>
+                        <span class="role-badge ${role.is_system ? 'system' : 'custom'}">
+                            ${role.is_system ? '🔒 系统角色' : '👤 自定义角色'}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="permissions-count">${role.permissions_count || 0} 个权限</span>
+                    </td>
+                    <td>${formatDate(role.created_at)}</td>
+                    <td>
+                        <div class="actions">
+                            <button class="btn btn-secondary btn-sm" onclick="viewRole(${role.id})">👁️ 查看</button>
+                            <button class="btn btn-secondary btn-sm" onclick="editRole(${role.id})" ${role.is_system ? 'disabled' : ''}>✏️ 编辑</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteRole(${role.id})" ${role.is_system ? 'disabled' : ''}>🗑️ 删除</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // 搜索角色
+        function searchRoles() {
+            searchQuery = document.getElementById('searchInput').value;
+            currentPage = 1;
+            filterAndDisplayRoles();
+        }
+        
+        // 分页控制
+        function changePage(direction) {
+            const totalPages = Math.ceil(filteredRoles.length / pageSize);
+            const newPage = currentPage + direction;
+            
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                filterAndDisplayRoles();
+            }
+        }
+        
+        // 更新分页信息
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredRoles.length / pageSize);
+            const pageInfo = document.getElementById('pageInfo');
+            const prevBtn = document.getElementById('prevPage');
+            const nextBtn = document.getElementById('nextPage');
+            
+            pageInfo.textContent = `第 ${currentPage} 页，共 ${filteredRoles.length} 条记录`;
+            
+            prevBtn.disabled = currentPage <= 1;
+            nextBtn.disabled = currentPage >= totalPages;
+        }
+        
+        // 显示创建角色模态框
+        function showCreateRoleModal() {
+            alert('创建角色功能正在开发中...\n\n您可以通过API端点直接创建角色:\nPOST /api/admin/roles\n\n或者联系系统管理员添加新角色。');
+        }
+        
+        // 查看角色详情
+        function viewRole(roleId) {
+            window.location.href = `/admin/roles/${roleId}`;
+        }
+        
+        // 编辑角色
+        function editRole(roleId) {
+            window.location.href = `/admin/roles/${roleId}/edit`;
+        }
+        
+        // 删除角色
+        async function deleteRole(roleId) {
+            if (!confirm('确定要删除这个角色吗？此操作不可撤销！')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/admin/roles/${roleId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`删除失败: ${response.statusText}`);
+                }
+                
+                alert('角色删除成功！');
+                loadRoles(); // 重新加载列表
+                
+            } catch (error) {
+                console.error('删除角色失败:', error);
+                alert('删除角色失败: ' + error.message);
+            }
+        }
+        
+        // 工具函数
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('rolesContent').style.display = 'none';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('rolesContent').style.display = 'block';
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return '未知';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('zh-CN') + ' ' + date.toLocaleTimeString('zh-CN', { hour12: false });
+        }
+    </script>
+</body>
+</html> 

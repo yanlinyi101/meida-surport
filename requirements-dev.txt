@@ -1,0 +1,6 @@
+fastapi==0.95.0
+uvicorn==0.21.1
+jinja2==3.1.2
+mangum==0.17.0
+itty-router==0.6.0
+wrangler==3.1.0 

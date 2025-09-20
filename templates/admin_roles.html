@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>角色管理 - 美大客服支持系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="/static/styles.css" rel="stylesheet">
+    <style>
+        .loading { display: none; }
+        .loading.show { display: block; }
+        .system-role-badge {
+            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800;
+        }
+        .permission-category {
+            @apply border rounded-lg p-4 mb-4;
+        }
+        .permission-item {
+            @apply flex items-center space-x-2 p-2 hover:bg-gray-50 rounded;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/admin" class="text-xl font-bold text-gray-800 flex items-center space-x-2">
+                        <span class="text-2xl">👨‍💼</span>
+                        <span>管理后台</span>
+                    </a>
+                    <div class="ml-6 flex space-x-4">
+                        <a href="/admin" class="text-gray-600 hover:text-gray-900">仪表板</a>
+                        <a href="#" class="text-blue-600 font-medium">角色管理</a>
+                        <a href="/admin/permissions" class="text-gray-600 hover:text-gray-900">权限管理</a>
+                        <a href="/admin/users" class="text-gray-600 hover:text-gray-900">用户管理</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-gray-600 hover:text-gray-900">返回首页</a>
+                    <button onclick="logout()" class="text-red-600 hover:text-red-900">退出登录</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Header -->
+        <div class="mb-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">角色管理</h1>
+                <p class="text-gray-600">管理系统角色和权限分配</p>
+            </div>
+            <button onclick="showCreateRoleModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                ➕ 创建角色
+            </button>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="mb-6 bg-white rounded-lg shadow p-4">
+            <div class="flex space-x-4">
+                <div class="flex-1">
+                    <input type="text" id="searchInput" placeholder="搜索角色名称..." 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <button onclick="searchRoles()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                    🔍 搜索
+                </button>
+                <button onclick="resetSearch()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                    🔄 重置
+                </button>
+            </div>
+        </div>
+
+        <!-- Roles Table -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="loading" id="loadingSpinner">
+                <div class="text-center py-8">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <p class="mt-2 text-gray-600">加载中...</p>
+                </div>
+            </div>
+
+            <div id="rolesTable" class="hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">角色名称</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">描述</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">权限数量</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">用户数量</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">类型</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rolesTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Roles will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div id="pagination" class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200">
+                <div class="flex-1 flex justify-between sm:hidden">
+                    <button id="prevPageMobile" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        上一页
+                    </button>
+                    <button id="nextPageMobile" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                        下一页
+                    </button>
+                </div>
+                <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm text-gray-700">
+                            显示 <span id="pageInfo" class="font-medium">1-20</span> 条，共 <span id="totalCount" class="font-medium">0</span> 条
+                        </p>
+                    </div>
+                    <div>
+                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" id="pageNumbers">
+                            <!-- Page numbers will be inserted here -->
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Role Modal -->
+    <div id="roleModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg font-medium text-gray-900 mb-4" id="modalTitle">创建角色</h3>
+                
+                <form id="roleForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">角色名称 *</label>
+                        <input type="text" id="roleName" required
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <div id="roleNameReadonly" class="hidden mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-600">
+                            <!-- System role name will be shown here -->
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">描述</label>
+                        <textarea id="roleDescription" rows="3"
+                                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-3">权限分配</label>
+                        <div id="permissionsContainer" class="max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-4">
+                            <!-- Permissions will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-4 border-t">
+                        <button type="button" onclick="closeRoleModal()" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                            取消
+                        </button>
+                        <button type="submit" id="saveRoleBtn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                            保存
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                    <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mt-2">确认删除</h3>
+                <div class="mt-2 px-7 py-3">
+                    <p class="text-sm text-gray-500" id="deleteMessage">
+                        确定要删除这个角色吗？此操作无法撤销。
+                    </p>
+                </div>
+                <div class="items-center px-4 py-3">
+                    <button id="confirmDeleteBtn" class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-24 mr-2 hover:bg-red-700">
+                        删除
+                    </button>
+                    <button onclick="closeDeleteModal()" class="px-4 py-2 bg-gray-600 text-white text-base font-medium rounded-md w-24 hover:bg-gray-700">
+                        取消
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentPage = 1;
+        let currentQuery = '';
+        let currentRoleId = null;
+        let permissions = [];
+        let isSystemRole = false;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRoles();
+            loadPermissions();
+            
+            // Search on enter key
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchRoles();
+                }
+            });
+        });
+
+        // Load roles with pagination
+        async function loadRoles(page = 1, query = '') {
+            try {
+                showLoading(true);
+                
+                const params = new URLSearchParams({
+                    page: page,
+                    page_size: 20
+                });
+                
+                if (query) {
+                    params.append('q', query);
+                }
+                
+                const response = await fetch(`/api/admin/roles?${params}`, {
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load roles');
+                }
+                
+                const data = await response.json();
+                displayRoles(data.items);
+                updatePagination(data);
+                
+                currentPage = page;
+                currentQuery = query;
+                
+            } catch (error) {
+                console.error('Error loading roles:', error);
+                alert('加载角色失败：' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Display roles in table
+        function displayRoles(roles) {
+            const tbody = document.getElementById('rolesTableBody');
+            tbody.innerHTML = '';
+            
+            roles.forEach(role => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${role.name}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-900">${role.description || '-'}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        ${role.permissions_count}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        ${role.user_count}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ${role.is_system ? 
+                            '<span class="system-role-badge">系统角色</span>' : 
+                            '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">自定义</span>'
+                        }
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="editRole(${role.id})" class="text-blue-600 hover:text-blue-900 mr-3">编辑</button>
+                        ${!role.is_system ? 
+                            `<button onclick="deleteRole(${role.id}, '${role.name}', ${role.user_count})" class="text-red-600 hover:text-red-900">删除</button>` :
+                            '<span class="text-gray-400">系统保护</span>'
+                        }
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Load permissions for form
+        async function loadPermissions() {
+            try {
+                const response = await fetch('/api/admin/permissions', {
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load permissions');
+                }
+                
+                permissions = await response.json();
+                
+            } catch (error) {
+                console.error('Error loading permissions:', error);
+            }
+        }
+
+        // Show/hide loading spinner
+        function showLoading(show) {
+            const spinner = document.getElementById('loadingSpinner');
+            const table = document.getElementById('rolesTable');
+            
+            if (show) {
+                spinner.classList.add('show');
+                table.classList.add('hidden');
+            } else {
+                spinner.classList.remove('show');
+                table.classList.remove('hidden');
+            }
+        }
+
+        // Search roles
+        function searchRoles() {
+            const query = document.getElementById('searchInput').value;
+            loadRoles(1, query);
+        }
+
+        // Reset search
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            loadRoles(1, '');
+        }
+
+        // Show create role modal
+        function showCreateRoleModal() {
+            currentRoleId = null;
+            isSystemRole = false;
+            document.getElementById('modalTitle').textContent = '创建角色';
+            document.getElementById('roleName').style.display = 'block';
+            document.getElementById('roleNameReadonly').style.display = 'none';
+            document.getElementById('roleForm').reset();
+            renderPermissions([]);
+            document.getElementById('roleModal').classList.remove('hidden');
+        }
+
+        // Edit role
+        async function editRole(roleId) {
+            try {
+                const response = await fetch(`/api/admin/roles/${roleId}`, {
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load role');
+                }
+                
+                const role = await response.json();
+                
+                currentRoleId = roleId;
+                isSystemRole = role.is_system;
+                
+                document.getElementById('modalTitle').textContent = '编辑角色';
+                document.getElementById('roleName').value = role.name;
+                document.getElementById('roleDescription').value = role.description || '';
+                
+                if (role.is_system) {
+                    document.getElementById('roleName').style.display = 'none';
+                    document.getElementById('roleNameReadonly').style.display = 'block';
+                    document.getElementById('roleNameReadonly').textContent = role.name + ' (系统角色，不可修改名称)';
+                } else {
+                    document.getElementById('roleName').style.display = 'block';
+                    document.getElementById('roleNameReadonly').style.display = 'none';
+                }
+                
+                renderPermissions(role.permissions);
+                document.getElementById('roleModal').classList.remove('hidden');
+                
+            } catch (error) {
+                console.error('Error loading role:', error);
+                alert('加载角色失败：' + error.message);
+            }
+        }
+
+        // Render permissions checkboxes
+        function renderPermissions(selectedPermissions) {
+            const container = document.getElementById('permissionsContainer');
+            container.innerHTML = '';
+            
+            permissions.forEach(category => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'permission-category';
+                
+                const categoryHeader = document.createElement('h4');
+                categoryHeader.className = 'font-medium text-gray-900 mb-2';
+                categoryHeader.textContent = getCategoryDisplayName(category.category);
+                categoryDiv.appendChild(categoryHeader);
+                
+                category.items.forEach(permission => {
+                    const permissionDiv = document.createElement('div');
+                    permissionDiv.className = 'permission-item';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = `perm_${permission.code}`;
+                    checkbox.value = permission.code;
+                    checkbox.className = 'h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded';
+                    checkbox.checked = selectedPermissions.includes(permission.code);
+                    
+                    const label = document.createElement('label');
+                    label.htmlFor = `perm_${permission.code}`;
+                    label.className = 'text-sm text-gray-700';
+                    label.textContent = `${permission.code} - ${permission.description}`;
+                    
+                    permissionDiv.appendChild(checkbox);
+                    permissionDiv.appendChild(label);
+                    categoryDiv.appendChild(permissionDiv);
+                });
+                
+                container.appendChild(categoryDiv);
+            });
+        }
+
+        // Get category display name
+        function getCategoryDisplayName(category) {
+            const names = {
+                'users': '👥 用户管理',
+                'roles': '🛡️ 角色权限', 
+                'permissions': '🔐 权限管理',
+                'audit': '📊 审计日志',
+                'tickets': '🎫 工单管理',
+                'warranty': '🛠️ 保修管理',
+                'centers': '🏢 服务中心',
+                'ai': '🤖 AI功能',
+                'geo': '🌍 地理位置',
+                'system': '⚙️ 系统管理'
+            };
+            return names[category] || category;
+        }
+
+        // Handle form submission
+        document.getElementById('roleForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('roleName').value;
+            const description = document.getElementById('roleDescription').value;
+            
+            // Get selected permissions
+            const selectedPermissions = [];
+            document.querySelectorAll('#permissionsContainer input[type="checkbox"]:checked').forEach(checkbox => {
+                selectedPermissions.push(checkbox.value);
+            });
+            
+            const roleData = {
+                name: name,
+                description: description,
+                permission_codes: selectedPermissions
+            };
+            
+            try {
+                let response;
+                if (currentRoleId) {
+                    // Update existing role
+                    response = await fetch(`/api/admin/roles/${currentRoleId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify(roleData)
+                    });
+                } else {
+                    // Create new role
+                    response = await fetch('/api/admin/roles', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        credentials: 'include',
+                        body: JSON.stringify(roleData)
+                    });
+                }
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to save role');
+                }
+                
+                closeRoleModal();
+                loadRoles(currentPage, currentQuery);
+                alert(currentRoleId ? '角色更新成功！' : '角色创建成功！');
+                
+            } catch (error) {
+                console.error('Error saving role:', error);
+                alert('保存角色失败：' + error.message);
+            }
+        });
+
+        // Close role modal
+        function closeRoleModal() {
+            document.getElementById('roleModal').classList.add('hidden');
+        }
+
+        // Delete role
+        function deleteRole(roleId, roleName, userCount) {
+            if (userCount > 0) {
+                alert(`无法删除角色"${roleName}"，因为还有 ${userCount} 个用户使用此角色。请先解除用户的角色分配。`);
+                return;
+            }
+            
+            currentRoleId = roleId;
+            document.getElementById('deleteMessage').textContent = `确定要删除角色"${roleName}"吗？此操作无法撤销。`;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        // Confirm delete
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async function() {
+            try {
+                const response = await fetch(`/api/admin/roles/${currentRoleId}`, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to delete role');
+                }
+                
+                closeDeleteModal();
+                loadRoles(currentPage, currentQuery);
+                alert('角色删除成功！');
+                
+            } catch (error) {
+                console.error('Error deleting role:', error);
+                alert('删除角色失败：' + error.message);
+            }
+        });
+
+        // Close delete modal
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+
+        // Update pagination
+        function updatePagination(data) {
+            document.getElementById('totalCount').textContent = data.total;
+            
+            const start = (data.page - 1) * data.page_size + 1;
+            const end = Math.min(data.page * data.page_size, data.total);
+            document.getElementById('pageInfo').textContent = `${start}-${end}`;
+            
+            // Update page numbers
+            const pageNumbers = document.getElementById('pageNumbers');
+            pageNumbers.innerHTML = '';
+            
+            for (let i = 1; i <= data.total_pages; i++) {
+                if (i === data.page || Math.abs(i - data.page) <= 2 || i === 1 || i === data.total_pages) {
+                    const button = document.createElement('button');
+                    button.textContent = i;
+                    button.className = i === data.page 
+                        ? 'relative inline-flex items-center px-4 py-2 border border-blue-500 bg-blue-50 text-sm font-medium text-blue-600'
+                        : 'relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50';
+                    button.onclick = () => loadRoles(i, currentQuery);
+                    pageNumbers.appendChild(button);
+                }
+            }
+        }
+
+        // Logout
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                window.location.href = '/admin';
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+    </script>
+</body>
+</html> 
