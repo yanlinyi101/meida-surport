@@ -1,20 +1,12 @@
-﻿# deps / env
+﻿# Node / Python / 编辑器等常见忽略
 node_modules/
-new_venv/
-venv/
-.env
-# python
-__pycache__/
-*.pyc
-# builds
+.dist/
 dist/
-build/
-# local data
-data/*.db
-data/warranty/*
-!data/.keep
-# OS / IDE
+out/
+site/.cache/
+__pycache__/
+.ipynb_checkpoints/
+.env
 .DS_Store
-*.log
-# cloudflare
-.cloudflared/
+.vscode/
+.idea/
