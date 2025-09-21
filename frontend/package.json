@@ -1,0 +1,26 @@
+{
+  "name": "meidasupport-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for Meida Support System",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 3000",
+    "start": "python -m http.server 8080",
+    "build": "echo 'No build step needed for static HTML/CSS/JS'",
+    "preview": "python -m http.server 4173"
+  },
+  "keywords": [
+    "html",
+    "css", 
+    "javascript",
+    "static-site"
+  ],
+  "author": "Meida Support Team",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+} 
