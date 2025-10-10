@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>管理后台 - 美大客服支持系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="/static/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/" class="text-xl font-bold text-gray-800 flex items-center space-x-2">
+                            <span class="text-2xl">🔥</span>
+                            <span class="hidden sm:inline">美大客服支持中心</span>
+                            <span class="sm:hidden">美大客服</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="flex-grow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="bg-white rounded-lg shadow-sm p-8">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-4">👨‍💼 管理后台</h1>
+                    <p class="text-gray-600">请选择您需要访问的功能</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                    <a href="/admin/login.html" class="block bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-6 hover:from-blue-600 hover:to-blue-700 transition-all transform hover:-translate-y-1 shadow-md hover:shadow-lg">
+                        <div class="flex items-center space-x-4">
+                            <div class="text-4xl">🔐</div>
+                            <div>
+                                <h2 class="text-xl font-bold mb-1">管理员登录</h2>
+                                <p class="text-blue-100 text-sm">登录管理后台</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="/" class="block bg-gradient-to-br from-gray-500 to-gray-600 text-white rounded-lg p-6 hover:from-gray-600 hover:to-gray-700 transition-all transform hover:-translate-y-1 shadow-md hover:shadow-lg">
+                        <div class="flex items-center space-x-4">
+                            <div class="text-4xl">🏠</div>
+                            <div>
+                                <h2 class="text-xl font-bold mb-1">返回首页</h2>
+                                <p class="text-gray-100 text-sm">回到用户端首页</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg max-w-2xl mx-auto">
+                    <h3 class="text-sm font-semibold text-blue-800 mb-2">💡 提示</h3>
+                    <p class="text-sm text-blue-700">如果您是管理员，请点击"管理员登录"进入管理界面。默认管理员账号详见登录页面。</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-white border-t border-gray-200 py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-gray-500 text-sm">© 2023 美大客服支持中心</p>
+        </div>
+    </footer>
+</body>
+</html>
+

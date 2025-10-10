@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- 首页 -->
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- 管理后台 -->
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/admin/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+  <!-- 产品问题列表 -->
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/issues/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- 集成灶 -->
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/issues/integrated-stove/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- 油烟机 -->
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/issues/range-hood/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- 燃气灶 -->
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/issues/gas-stove/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- 消毒柜 -->
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/issues/disinfection-cabinet/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- 热水器 -->
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/issues/water-heater/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- 解决方案列表 -->
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/solution/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- 集成灶解决方案 -->
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/solution/integrated-stove/E01/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/solution/integrated-stove/E02/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/solution/integrated-stove/E03/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- 油烟机解决方案 -->
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/solution/range-hood/H01/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/solution/range-hood/H02/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/solution/range-hood/H03/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- 燃气灶解决方案 -->
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/solution/gas-stove/G01/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/solution/gas-stove/G02/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/solution/gas-stove/G03/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- 消毒柜解决方案 -->
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/solution/disinfection-cabinet/D01/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/solution/disinfection-cabinet/D02/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/solution/disinfection-cabinet/D03/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <!-- 热水器解决方案 -->
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/solution/water-heater/W01/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/solution/water-heater/W02/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://29b5a572.meida-surport.pages.dev/solution/water-heater/W03/</loc>
+    <lastmod>2023-12-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+</urlset>
+

@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /templates/
+Disallow: /*.json
+Disallow: /*?*
+
+Sitemap: https://29b5a572.meida-surport.pages.dev/sitemap.xml
+
+# 允许爬取的主要页面
+Allow: /index.html
+Allow: /issues/
+Allow: /solution/
+Allow: /static/
+
+# 爬虫访问频率限制
+Crawl-delay: 1
+
