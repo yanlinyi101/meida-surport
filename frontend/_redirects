@@ -1,3 +1,4 @@
 # Cloudflare Pages 重定向配置
 /admin/* /admin/login.html 200
-/api/* https://your-backend-api.com/api/:splat 200
+# API 代理需要在 Cloudflare Workers 中配置，不能在 _redirects 中使用外部 URL
+# /api/* https://your-backend-api.com/api/:splat 200
